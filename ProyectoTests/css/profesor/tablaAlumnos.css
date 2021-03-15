@@ -1,0 +1,22 @@
+table {
+    border-radius: 5px;
+  }
+
+  th{
+      font-size: 30px;
+      background-color: rgb(231, 230, 230);
+    
+  }
+
+  td{
+      font-size: 15px;
+      text-align: center;
+      background-color: rgb(246, 245, 245);
+    
+  }
+  
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  

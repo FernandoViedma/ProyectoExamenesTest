@@ -1,0 +1,35 @@
+#mostrarAsignaturas{
+    border: 1px solid rgb(22, 22, 22); 
+    border-radius: 8px;
+    width: 25%;
+    margin-top: 3%;
+    margin-bottom: 3%;
+    margin: 2%;
+    background-color: rgb(238, 236, 236);
+    font-size: 25px;
+    display: inline-block;
+}
+
+#titulo{
+    background-color: rgb(59, 59, 59);
+    color: white;
+    text-align: center;
+    padding: 2%;
+    font-size: 50px;
+}
+
+body{
+    background-color: rgb(211, 211, 211);
+}
+
+img{
+    height: 130px;
+    width: 130px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.subtitulo{
+    margin-top: 4%;
+    margin-bottom: 2%;
+}

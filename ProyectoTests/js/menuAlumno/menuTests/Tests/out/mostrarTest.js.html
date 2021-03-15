@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: mostrarTest.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: mostrarTest.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>$(document).ready(function() {
+    if(document.cookie.indexOf("sesion=alumno") == -1){
+        window.location.href = "login.html";
+    }else{
+        volver2();
+        obtenerIDTest();
+    }    
+});
+
+function obtenerIDTest(){
+    /** Se obtiene el nombre del test del local storage
+    Se envia por ajax al archivo php para hacer una consulta y obtener el id del test */
+        var nombreTest = localStorage.getItem('test');
+        var jsonDatos = { "nombreTest": nombreTest};
+        var request = $.ajax({
+            url: "php/alumno/Tests/obtenerDatos.php",
+            type: "post",  
+            dataType: 'json',
+            data: jsonDatos
+        });
+
+        request.done((response, _textStatus, _jqXHR) => {
+            console.log("done: ", response);
+            var idTest = response.idTest;
+            localStorage.setItem('idtest', idTest);
+            //Se comprueba si el examen ya se ha realizado o no.
+            comprobarDisponibilidad(idTest);
+        });
+
+        request.fail((response, textStatus, errorThrown) => {
+            console.log("fail: ", response);
+            console.log("textStatus: ", textStatus);
+            console.log("errorThrown: ", errorThrown);
+            alert('Error');
+        });
+}
+
+/**Para comprobar si el examen se ha realizado ya por parte del alumno se envia el id test y el id del usuario
+por ajax para hacer una consulta en la base de datos y ver si ya hay un resultado
+guardado. */
+function comprobarDisponibilidad(idTest){
+    var idUsuario = localStorage.getItem('usuario');
+    var jsonID = {"idTest": idTest, "idAlumno": idUsuario}
+    var request = $.ajax({
+        url: "php/alumno/Tests/disponibilidad.php",
+        type: "post",  
+        dataType: 'json',
+        data: jsonID
+    });
+
+    request.done((response, _textStatus, _jqXHR) => {
+        console.log("done: ", response);
+        if(!response.error){
+            /** si ya se ha realizado el examen sale un alert y redirecciona al menú anterior */
+            alert("Ya has realizado este test");
+            window.location.href = "menuTests.html";
+        }else{
+            /** si no hay resultados se procede a pintar el examen */
+            obtenerExamen();
+        }
+    });
+
+    request.fail((response, textStatus, errorThrown) => {
+        console.log("fail: ", response);
+        console.log("textStatus: ", textStatus);
+        console.log("errorThrown: ", errorThrown);
+        alert('Error');
+    });
+}
+
+function obtenerExamen(){
+    var soluciones = [];
+    var longitudArray;
+    /** Se obtiene el nombre del test del Local Storage y se guarda en un json. */
+    var nombreTest = localStorage.getItem('test');
+    var jsonNombreTest = { "nombreTest": nombreTest };
+    /** Se envia al php el json con el nombre del test para que obtenga las preguntas y las soluciones de ese test */
+    var request = $.ajax({
+        url: "php/alumno/Tests/mostrarTest.php",
+        type: "post",  
+        dataType: 'json',
+        data: jsonNombreTest
+    });
+
+    request.done((response, _textStatus, _jqXHR) => {
+        $('&lt;h1>'+ nombreTest + '&lt;/h1>').appendTo('#titulo');
+        var test = response;
+        /** Guardamos el número de preguntas del test en una variable */
+        longitudArray = response.length;
+        /**Se recorre el array y se llama a las funciones para pintar las preguntas y las opciones
+        También se guarda en otro array la opción correcta de cada pregunta. */
+        for(var i = 0; i &lt; test.length; i++){
+            mostrarPreguntas(i,test);
+            mostrarOpciones(i,test);
+            soluciones.push(response[i].solucion);
+        }  
+        console.log("soluciones" + soluciones);
+        /** Se llama a las funciones de pintar el botón para corregir y la función para obtener
+        las respuestas del alumno. */
+        pintarBotonComprobar();
+        obtenerRespuestasAlumno(longitudArray, soluciones); 
+        
+    });
+    request.fail((response, textStatus, errorThrown) => {
+        console.log("fail: ", response);
+        console.log("textStatus: ", textStatus);
+        console.log("errorThrown: ", errorThrown);
+        alert('Error')
+    });
+}
+
+/** Función para pintar las preguntas recorriendo el array obtenido mediante la llamada Ajax
+En casa de tener imagen genera otro div */
+function mostrarPreguntas(i,test){
+    $(`&lt;div id="preguntasDiv">&lt;/div>`).appendTo('#test');
+    $('&lt;br>&lt;br>&lt;form id="preguntas' + i + '" class="opciones">&lt;h1 align="center" class="preguntas">' + test[i].pregunta + '&lt;/h1>&lt;/form>&lt;br>').appendTo('#preguntasDiv');
+    if (test[i].image != "") {
+        $(`&lt;div align="center" id="imgdiv`+ i +`">&lt;/div>`).appendTo('#preguntas' + i +'');
+        $(`&lt;img src='` + test[i].image + `'/>`).appendTo('#imgdiv' + i +'');
+    }
+}
+
+/** Función para mostrar las opciones
+Se utiliza el split para separar las opciones por cada "|". */
+function mostrarOpciones(i,test){
+    splitOpciones = test[i].opciones.split("|");
+    for (var x = 0; x &lt; splitOpciones.length; x++) {
+        $('&lt;label id="res' + x + '">&lt;input type="radio" name="ask" value=" ' + splitOpciones[x] + ' ">' + splitOpciones[x] + '&lt;/label> &lt;/br>').appendTo('#preguntas' + i +'');
+    }
+}
+
+/** Función para pintar el botón de corregir */
+function pintarBotonComprobar() {
+    $('&lt;div align="center">&lt;input id="comprobar" type="submit" value="Comprobar" class="btn btn-danger"&lt;/div>&lt;br>&lt;br>').appendTo('#preguntasDiv');
+}
+
+/** Función para obtener las respuestas del Alumno */
+function obtenerRespuestasAlumno(longitudArray, soluciones){
+    /** Al hacer click sobre el botón de comprobar */
+    $( "#comprobar" ).click(function() {
+        var respuestasAlumno = [];
+        var preguntasAcertadas = 0;
+        var preguntasFalladas = 0;
+        var casillasVacias = false;
+        /** El valor de la variable longitudArray corresponde al número de preguntas del test
+        De esta manera mediante un for se pueden recorrer todos los inputs del test usando la id.*/
+        for( i = 0; i &lt; longitudArray; i++){
+            /** si el input esta marcado se obtiene su valor y se guarda en el array respuestasAlumno */
+            if($('input[name=ask]', '#preguntas' + i + '').is(':checked')){
+                respuestasAlumno.push($('input[name=ask]:checked', '#preguntas' + i + '').val().trim());
+            /** Si el input no esta marcados salta un alert y se sale del bucle. */
+            }else{
+                alert("Faltan preguntas por responder");
+                var casillasVacias = true;
+                break;
+            }
+        }
+        /** Si se han marcado todas las respuestas, se comparan las respuestas del alumno 
+        con las soluciones */
+        if(casillasVacias == false){
+            console.log("res: " + respuestasAlumno);
+            for(x = 0; x &lt; respuestasAlumno.length; x++){
+                console.log(respuestasAlumno);
+                for( x = 0; x &lt; soluciones.length; x++){
+                    if(respuestasAlumno[x] == soluciones[x]){
+                        preguntasAcertadas++;
+                    }else{
+                        preguntasFalladas++;
+                    }
+                }
+                console.log("Aciertos: " + preguntasAcertadas);
+                console.log("Fallos: " + preguntasFalladas);
+                calcularNota(preguntasAcertadas, longitudArray);
+            }
+            $("#preguntasDiv").hide();
+            printarResultados();
+            guardarDatos();
+        }
+    });
+}
+
+/**Con los aciertos y el número de preguntas se hace una regla de 3 para calcular la nota sobre 10
+Con toFixed() se redondea, en este caso a dos decimales*/
+function calcularNota(preguntasAcertadas, longitudArray){
+    var nota;
+    nota = (preguntasAcertadas * 10 / longitudArray);
+    var notaRedondeada = nota.toFixed(2);
+    localStorage.setItem('nota', notaRedondeada);
+    console.log(notaRedondeada);
+}
+
+/**Funcion para guardar los resultados en la base de datos*/
+function guardarDatos(){
+    var notaAlumno = localStorage.getItem('nota');
+    var idTestRealizado = localStorage.getItem('idtest');
+    var idUsuarioTest = localStorage.getItem('usuario');
+    var jsonResultados = { "idTest": idTestRealizado, "idAlumno": idUsuarioTest, "notaAlumno": notaAlumno};
+    console.log("json", jsonResultados);
+    var request = $.ajax({
+        url: "php/alumno/Tests/resultados.php",
+        type: "post",  
+        dataType: 'json',
+        data: jsonResultados
+    });
+
+    request.done((response, _textStatus, _jqXHR) => {
+        console.log("done: ", response);   
+    });
+
+    request.fail((response, textStatus, errorThrown) => {
+        console.log("fail: ", response);
+        console.log("textStatus: ", textStatus);
+        console.log("errorThrown: ", errorThrown);
+        alert('Error');
+    });
+}
+
+function printarResultados(){
+    var notaStorage = localStorage.getItem('nota');
+    $('&lt;br>&lt;div align="center">&lt;h2>Nota obtenida en el test:&lt;br>' + notaStorage + '/10&lt;/h2>&lt;/div>&lt;br>&lt;br>&lt;button class="btn btn-info" onclick="volver();">Volver al menú de test&lt;/button>').appendTo('#test');
+}
+
+function volver(){
+    window.location.href = "menuTests.html";
+}
+
+function volver2(){
+    $('#volver').click(function(){
+        location.href = "menuTests.html"; 
+    });
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#calcularNota">calcularNota</a></li><li><a href="global.html#comprobarDisponibilidad">comprobarDisponibilidad</a></li><li><a href="global.html#guardarDatos">guardarDatos</a></li><li><a href="global.html#mostrarOpciones">mostrarOpciones</a></li><li><a href="global.html#mostrarPreguntas">mostrarPreguntas</a></li><li><a href="global.html#obtenerRespuestasAlumno">obtenerRespuestasAlumno</a></li><li><a href="global.html#pintarBotonComprobar">pintarBotonComprobar</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Jun 01 2020 15:44:54 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

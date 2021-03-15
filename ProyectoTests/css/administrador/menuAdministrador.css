@@ -1,0 +1,28 @@
+.mostrarOpciones{
+    border: 1px solid rgb(22, 22, 22); 
+    border-radius: 8px;
+    width: 25%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    margin: 1%;
+    background-color: rgb(238, 236, 236);
+    font-size: 25px;
+    display: inline-block;
+}
+
+#titulo{
+    background-color: rgb(59, 59, 59);
+    color: white;
+    text-align: center;
+    padding: 2%;
+    font-size: 50px;
+}
+
+body{
+    background-color: rgb(211, 211, 211);
+}
+
+.subtitulo{
+    margin-top: 4%;
+    margin-bottom: 2%;
+}

@@ -1,0 +1,25 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35%;
+    padding: 20px;
+    border: 1px solid rgb(168, 168, 168);
+    border-radius: 8px;
+    margin: auto;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    background-color: rgb(240, 240, 240);
+}
+
+input{
+      display: block;
+      margin:5px;
+      text-align: center;
+      width: 60%;
+}
+
+.submit{
+    width: 182px;
+    margin-top: 8%;
+}

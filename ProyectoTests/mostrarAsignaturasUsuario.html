@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    
+    <!-- Jquery y Ajax -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    <!--Archivos JS-->
+    <script src="js/menuAdministrador/AsignaturasUsuario.js"></script>
+    <script src="js/login/login.js"></script>
+
+    <!-- Archivos CSS -->
+    <link rel="stylesheet" href="css/alumno/tests/tests.css">
+    <link rel="stylesheet" href="css/administrador/tablaAsignaturasUsuario.css">
+    
+</head>
+
+<style>
+    
+    #logout{
+        width: 70px;
+        height: 70px;
+        position: absolute;
+        margin-left: 270px;
+        margin-top: 0px;
+    }
+
+    #imgLogout{
+        width: 50px;
+        height: 50px;
+        position: relative;
+        margin-top: -10px;
+    }
+
+    #volver{
+        width: 60px;
+        height: 60px;
+        position: absolute;
+        margin-left: -340px;
+        margin-top: 5px;
+    }
+
+    #imgVolver{
+        width: 40px;
+        height: 40px;
+        position: relative;
+        margin-top: -16px;
+    }
+
+</style>
+
+
+<body>
+    <div id="titulo">
+        <button id="volver" ><img id="imgVolver" src="assets/back.png" ></button>
+        Asignaturas del usuario
+        <button id="logout" title="Logout"><img id="imgLogout" src="assets/logout.png" ></button>
+    </div>
+    <div class="wrapper" align="center">
+        <table id="listaAsignaturas">
+            <th>Lista de asignaturas del usuario</th>
+        </table>
+    </div>
+</body>
+
+</html>
